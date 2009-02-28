@@ -56,8 +56,14 @@
             }
 
             if (settings.trigger) {        
-                $$.unbind('.sundayMorning');		
+                //$$.unbind('.sundayMorning');		
                 $$.bind(settings.trigger+'.sundayMorning', function(evt) {
+					if (settings.ctrlKey != evt.ctrlKey) {
+						return false;	
+					}
+					if (settings.shiftKey != evt.shiftKey) {
+						return false;	
+					}
                     settings.menuLeft = evt.pageX;
                     settings.menuTop  = evt.pageY;
                     
@@ -79,6 +85,7 @@
                         contentReplacement($$, text, settings)
                     });
                     evt.preventDefault();
+					evt.stopPropagation();
                 });
             } else {
                 translate(settings, function(settings) {
@@ -114,8 +121,14 @@
         var settings = $.extend({}, $.sundayMorning.defaults, settings);
         return this.each(function() {
             var $$ = $(this);    
-            $$.unbind('.sundayMorning');
+            //$$.unbind('.sundayMorning');
             $$.bind('dblclick.sundayMorning', function(evt) {  
+				if (settings.ctrlKey != evt.ctrlKey) {
+					return false;	
+				}
+				if (settings.shiftKey != evt.shiftKey) {
+					return false;	
+				}
                 if (window.getSelection) { 
                     var text = window.getSelection(); 
                 } else if (document.getSelection) { 
@@ -144,11 +157,12 @@
                         .appendTo('body');             
                         ($.browser.msie) ? bubble.show() : bubble.fadeIn('fast');
                         setTimeout( function() { 
-                            ($.browser.msie) ? bubble.hide() : bubble.fadeOut('fast');
+                            ($.browser.msie) ? bubble.remove() : bubble.fadeOut('fast', function() { bubble.remove() } );
                         }, settings.delay);
                     });
                 });
                 evt.preventDefault();
+				evt.stopPropagation();
             });
         });
     };
@@ -201,6 +215,8 @@
         trigger:     false,
         source:      '',
         destination: '',
+		ctrlKey:     false,
+		shiftKey:    false,
         destinationFallback:$.sundayMorning.translatable
     };
         
